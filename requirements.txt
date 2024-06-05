@@ -1,1 +1,7 @@
+packaging
 python-dotenv
+langchain
+langchain-community
+openai
+ragas
+requests
