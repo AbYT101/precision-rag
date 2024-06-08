@@ -1,6 +1,12 @@
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.schema.output_parser import StrOutputParser
+from openai import OpenAI
 
-def generate(retriever, prompt, llm):
-    rag_chain = (retriever | prompt | llm | StrOutputParser())
-    return rag_chain
+def generate(prompt, openai_api_key):
+    client = OpenAI(api_key=openai_api_key)
+    resp = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt},
+        ]
+    )
+    return resp.choices[0].message.content
