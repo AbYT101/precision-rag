@@ -1,26 +1,36 @@
+import sys
 import os
-from dotenv import load_dotenv
+
+# Get the parent directory of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+
+# Add the parent directory to the system path
+sys.path.insert(0, parent_dir)
+
 from data.load_data import load_data
-from retrieve import retrieve_chunks
+from retrieve import create_retriever, retrieve_chunks
 from augmentation import augmentation
 from generate import generate
+from parse_prompts import parse_prompts
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
 openai_api_key = os.getenv('OPENAI_API_KEY')
 
-if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY environment variable not set")
 
-def main():
+def run_rag(objective:str, scenarios:str, output:str):
     data = load_data('./data/knowledge.txt')
-    retriever = retrieve_chunks(data, openai_api_key)
-    prompt, llm = augmentation(data, openai_api_key)
-    rag_chain = generate(retriever, prompt, llm)
+    documents = retrieve_chunks(data)
+    retriever = create_retriever(documents, openai_api_key)
+    query = "Objective: " + objective + " Scenario: " + scenarios + " Output: " + output
+    context = retriever.similarity_search(query)
+    prompt = augmentation(query, context)
+    generated_prompts = generate(prompt, openai_api_key)
 
-    query = "Who can win the 2024 USA election? I want to know the prediction."
-    response = rag_chain.invoke({"question": query})
-    print(response)
+    parsed_prompts = parse_prompts(generated_prompts)
 
-if __name__ == "__main__":
-    main()
+    return generated_prompts
+

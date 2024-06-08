@@ -1,12 +1,15 @@
 import streamlit as st
-
+from rag import  run_rag
 # Placeholder function for input parser
 def parse_input(objective_description, scenarios, expected_outputs):
     # Your logic to parse input and return potential prompts goes here
+    prompts = run_rag(objective_description, scenarios, expected_outputs)
+
     potential_prompts = [
         f"Objective: {objective_description}",
         f"Scenarios: {scenarios}",
         f"Expected Outputs: {expected_outputs}",
+        f"{prompts}"
     ]
     return potential_prompts
 

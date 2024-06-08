@@ -1,20 +1,34 @@
-
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Weaviate
 from langchain_openai import OpenAIEmbeddings
 import weaviate
-from langchain_experimental.text_splitter import SemanticChunker
-from langchain_openai.embeddings import OpenAIEmbeddings
+import requests
 
 
-def retrieve_chunks(data, openai_api_key):
-    text_splitter = SemanticChunker(OpenAIEmbeddings())
-    docs = text_splitter.create_documents([data])
-    print(docs[0].page_content)
+class MyDocument:
+    def __init__(self, page_content, metadata=None):
+        self.page_content = page_content
+        self.metadata = metadata if metadata else {}
 
-    client = weaviate.Client(embedded_options=weaviate.EmbeddedOptions())
+
+def create_retriever(documents, openai_api_key):
+    # Check if Weaviate is running and connect if possible
+    try:
+        response = requests.get("http://localhost:8079/v1/.well-known/apollo-status")
+        if response.status_code == 200:
+            client = weaviate.Client("http://localhost:8079")
+    except requests.exceptions.ConnectionError:
+        # If not running, start embedded Weaviate
+        client = weaviate.Client(embedded_options=weaviate.EmbeddedOptions())
+
     embeddings = OpenAIEmbeddings(api_key=openai_api_key)
-    vectorstore = Weaviate.from_documents(documents=docs, embedding=embeddings, client=client)
-    retriever = vectorstore.as_retriever()
-    
-    return retriever
+    vectorstore = Weaviate.from_documents(documents=documents, embedding=embeddings, client=client)
+    return vectorstore
+
+def retrieve_chunks(data):
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000, chunk_overlap=200, length_function=len
+    )
+    text_chunks = text_splitter.split_text(data)
+    documents = [MyDocument(page_content=chunk) for chunk in text_chunks]
+    return documents
