@@ -63,6 +63,7 @@ precision-rag/
 - Evaluate generated prompt options based on relevance and coherence.
 - Select desired prompt options for further use.
 
+![10 Academy](https://github.com/AbYT101/precision-rag/tree/main/screenshot/prompts.png)
 
 ## License
 
