@@ -1,7 +1,7 @@
 import streamlit as st
-from rag import  run_rag
+from rag import run_rag
 # Placeholder function for input parser
-def parse_input(objective_description, scenarios, expected_outputs):
+def get_prompts(objective_description, scenarios, expected_outputs):
     # Your logic to parse input and return potential prompts goes here
     prompts = run_rag(objective_description, scenarios, expected_outputs)
 
@@ -26,7 +26,7 @@ def main():
     # Button to submit prompt
     if st.button("Submit"):
         # Call the input parser function here
-        potential_prompts = parse_input(objective_description, scenarios, expected_outputs)
+        potential_prompts = get_prompts(objective_description, scenarios, expected_outputs)
         # Display potential prompts
         st.write("### Potential Prompts:")
         for prompt in potential_prompts:
