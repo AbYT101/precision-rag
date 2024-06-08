@@ -18,14 +18,16 @@ precision-rag/
 │ ├── knowledge.txt
 │ └── load_data.py
 ├── evaluation/
-│ └── evaluate.py
+│ ├── automatic_evaluation.py
+│ ├── evaluate.py
+│ └── test_generator.py
 ├── rag/
 │ ├── augmentation.py
 │ ├── generate.py
+│ ├── parse_prompts.py
 │ ├── rag.py
-│ └── retrieve.py
-├── user_interface/
-│ └── index.html
+│ ├── retrieve.py
+│ └── ui.py
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -50,10 +52,10 @@ precision-rag/
     ```sh
     pip install -r requirements.txt
     ```
-4. **Run Rag**
+4. **Run Streamlit interface**
     ```sh
-    python rag/rag.py
-    ```
+   streamlit run rag/ui.py 
+   ```
 
 ## Usage
 - Provide input description of the task, including scenarios and expected outputs.
@@ -61,6 +63,7 @@ precision-rag/
 - Evaluate generated prompt options based on relevance and coherence.
 - Select desired prompt options for further use.
 
+![10 Academy](https://github.com/AbYT101/precision-rag/tree/main/screenshot/prompts.png)
 
 ## License
 
